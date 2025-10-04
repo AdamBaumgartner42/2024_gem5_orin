@@ -1,5 +1,7 @@
 ## Adam Notes
-I am providing instructions installing gem5 without Docker as there are compatibilty issues with WSL2 where you need to use Docker on the Windows side.
+I am providing instructions installing gem5 without Docker as I got blocked.
+
+These instructions are to be with VS Code connecting over SSH to a Jetson Orin Nano
 
 ## Installation
 
