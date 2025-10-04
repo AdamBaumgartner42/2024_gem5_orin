@@ -2,32 +2,47 @@
 I am providing instructions installing gem5 without Docker as there are compatibilty issues with WSL2 where you need to use Docker on the Windows side.
 
 ## Installation
+
 ## Clone Repository
+
 git clone https://github.com/AdamBaumgartner42/2024_gem5_orin.git
+
 cd 2024_gem5_orin
 
 ## Submodules
-/cd 2024_gem5_orin $ git submodule sync
-/cd 2024_gem5_orin $ git submodule update --init --recursive
+/2024_gem5_orin $ git submodule sync
+
+/2024_gem5_orin $ git submodule update --init --recursive
 
 ## Installation / Configuring
 /gem5 $ scons build/ALL/gem5.opt -j$(nproc)
+
 1. Ignore pre-commit/commit-msg hooks; Enter to Continue
+
 2. Again ignore installing the pre-commit hooks; Y to Continue
+
 3. Installation will take 2 hours
 
 /gem5 $build/ALL/gem5.opt configs/example/gem5_library/arm-hello.py
+
 1. Confirm that hello world works
 
 Update path:
+
 $ code ~/.bashrc
+
 Add: export PATH=$PATH:/home/mpiuser/2024_gem5_orin/gem5/build/ALL
+
 $ source ~/.bashrc // to reset bash file
 
 Symlink gem5 -> gem5.opt:
+
 $ cd ~/2024_gem5_orin/gem5/build/ALL
+
 $ ln -s gem5.opt gem5
+
 Test: /gem5 $ gem5 configs/example/gem5_library/arm-hello.py
+
 1. Confirm hello world test runs
 
 ## Further Instructions
