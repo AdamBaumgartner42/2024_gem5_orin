@@ -157,33 +157,33 @@ def extract_cache_stats_with_ratios(stats_file="m5out/stats.txt"):
                                 stat_value = float(parts[1])
                             except ValueError:
                                 continue
-                        
+
                         # Look for cache-related statistics (L1, L2, and L3)
-                        if ('system.cpu.icache' in stat_name or 
+                        if ('system.cpu.icache' in stat_name or
                             'system.cpu.dcache' in stat_name or
                             'system.l2cache' in stat_name or
                             'system.l3cache' in stat_name):
-                            if any(keyword in stat_name for keyword in 
-                                   ['overallHits', 'overallMisses', 'overallAccesses', 
+                            if any(keyword in stat_name for keyword in
+                                   ['overallHits', 'overallMisses', 'overallAccesses',
                                     'demandHits', 'demandMisses', 'demandAccesses']):
                                 cache_stats[stat_name] = stat_value
     except FileNotFoundError:
         print("Stats file not found")
-    
+
     return cache_stats
 
 # Robust function to calculate hit and miss ratios - handles all edge cases
 def calculate_cache_ratios(cache_stats):
     ratios = {}
-    
+
     # Define patterns to look for hits, misses, and accesses
     cache_types = ['icache', 'dcache', 'l2cache', 'l3cache']
-    
+
     for cache_type in cache_types:
         hits = None
         misses = None
         accesses = None
-        
+
         # Find hits, misses, and accesses for this cache type
         for stat_name, stat_value in cache_stats.items():
             if cache_type in stat_name and 'total' in stat_name:
@@ -193,12 +193,12 @@ def calculate_cache_ratios(cache_stats):
                     misses = stat_value
                 elif 'Accesses' in stat_name:
                     accesses = stat_value
-        
+
         # Calculate ratios with robust error handling
         try:
             total_accesses = None
             calculated_hits = None
-            
+
             # Determine total accesses
             if accesses is not None:
                 total_accesses = accesses
@@ -207,7 +207,7 @@ def calculate_cache_ratios(cache_stats):
             elif misses is not None and accesses is None:
                 # Only misses available, assume accesses = misses (100% miss rate)
                 total_accesses = misses
-                
+
             # Determine hits
             if hits is not None:
                 calculated_hits = hits
@@ -217,22 +217,22 @@ def calculate_cache_ratios(cache_stats):
                 calculated_hits = max(0, calculated_hits)
             else:
                 calculated_hits = 0
-            
+
             # Calculate ratios if we have valid data
             if total_accesses is not None and total_accesses > 0 and misses is not None:
                 hit_ratio = (calculated_hits / total_accesses) * 100
                 miss_ratio = (misses / total_accesses) * 100
-                
+
                 ratios[f'{cache_type}_hit_ratio'] = hit_ratio
                 ratios[f'{cache_type}_miss_ratio'] = miss_ratio
                 ratios[f'{cache_type}_total_accesses'] = total_accesses
                 ratios[f'{cache_type}_hits'] = calculated_hits
                 ratios[f'{cache_type}_misses'] = misses
-                
+
         except Exception as e:
             print(f"Error calculating ratios for {cache_type}: {e}")
             continue
-    
+
     return ratios
 
 # Extract and print cache statistics with ratios
@@ -244,15 +244,15 @@ if cache_stats:
     print("-" * 70)
     for stat_name, stat_value in sorted(cache_stats.items()):
         print(f"{stat_name}: {stat_value}")
-    
+
     # Calculate and display ratios
     try:
         ratios = calculate_cache_ratios(cache_stats)
-        
+
         if ratios:
             print("\nCalculated Cache Performance Metrics:")
             print("-" * 70)
-            
+
             # L1 I-Cache metrics
             if 'icache_hit_ratio' in ratios:
                 print(f"L1 I-Cache Hit Ratio:     {ratios['icache_hit_ratio']:.2f}%")
@@ -261,7 +261,7 @@ if cache_stats:
                 print(f"L1 I-Cache Misses:        {int(ratios['icache_misses'])}")
                 print(f"L1 I-Cache Total Accesses: {int(ratios['icache_total_accesses'])}")
                 print()
-            
+
             # L1 D-Cache metrics
             if 'dcache_hit_ratio' in ratios:
                 print(f"L1 D-Cache Hit Ratio:     {ratios['dcache_hit_ratio']:.2f}%")
@@ -270,7 +270,7 @@ if cache_stats:
                 print(f"L1 D-Cache Misses:        {int(ratios['dcache_misses'])}")
                 print(f"L1 D-Cache Total Accesses: {int(ratios['dcache_total_accesses'])}")
                 print()
-            
+
             # L2 Cache metrics
             if 'l2cache_hit_ratio' in ratios:
                 print(f"L2 Cache Hit Ratio:       {ratios['l2cache_hit_ratio']:.2f}%")
@@ -279,7 +279,7 @@ if cache_stats:
                 print(f"L2 Cache Misses:          {int(ratios['l2cache_misses'])}")
                 print(f"L2 Cache Total Accesses:  {int(ratios['l2cache_total_accesses'])}")
                 print()
-            
+
             # L3 Cache metrics
             if 'l3cache_hit_ratio' in ratios:
                 print(f"L3 Cache Hit Ratio:       {ratios['l3cache_hit_ratio']:.2f}%")
@@ -290,11 +290,11 @@ if cache_stats:
                 print()
         else:
             print("\nCould not calculate hit/miss ratios - insufficient data")
-            
+
     except Exception as e:
         print(f"\nError in ratio calculations: {e}")
         print("Raw statistics were successfully extracted but ratio calculation failed.")
-        
+
 else:
     print("No cache statistics found.")
 

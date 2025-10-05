@@ -1,7 +1,7 @@
 #include <stdio.h>
 
 int main() {
-    long long int n = 1000000; // 1E6, 1M digits
+    long long int n = 1000000; // 1E6
     long long int i;
 
     double pi = 0.0;
